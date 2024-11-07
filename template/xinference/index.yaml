@@ -20,6 +20,7 @@ spec:
     app_name:
       type: string
       value: xinference-${{ random(8) }}
+  inputs:
 
 ---
 apiVersion: apps/v1
@@ -123,7 +124,7 @@ metadata:
     cloud.sealos.io/app-deploy-manager-domain: ${{ defaults.app_host }}
 spec:
   rules:
-    - host: ${{ defaults.app_host }}.10.11.5.103.nip.io
+    - host: ${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
       http:
         paths:
           - backend:
@@ -135,7 +136,7 @@ spec:
             pathType: Prefix
   tls:
     - hosts:
-        - ${{ defaults.app_host }}.10.11.5.103.nip.io
+        - ${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
       secretName: wildcard-cert
 
 ---
