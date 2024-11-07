@@ -4,12 +4,12 @@ metadata:
   name: xinference
 spec:
   title: 'Xinference'
-  url: ''
+  url: 'https://inference.readthedocs.io/en/latest/index.html'
   gitRepo: 'https://github.com/xorbitsai/inference'
   author: 'Sealos'
   description: 'Xorbits Inference（Xinference）是一个性能强大且功能全面的分布式推理框架。可用于大语言模型（LLM），语音识别模型，多模态模型等各种模型的推理。通过 Xorbits Inference，你可以轻松地一键部署你自己的模型或内置的前沿开源模型。无论你是研究者，开发者，或是数据科学家，都可以通过 Xorbits Inference 与最前沿的 AI 模型，发掘更多可能。'
-  readme: 'https://raw.githubusercontent.com/xorbitsai/inference/blob/main/README.md'
-  icon: 'https://raw.githubusercontent.com/xorbitsai/inference/blob/main/assets/xorbits-logo.png'
+  readme: 'https://raw.githubusercontent.com/xorbitsai/inference/main/README.md'
+  icon: 'https://raw.githubusercontent.com/xorbitsai/inference/main/assets/xorbits-logo.png'
   templateType: inline
   categories:
     - tool
@@ -19,50 +19,59 @@ spec:
       value: ${{ random(8) }}
     app_name:
       type: string
-      value: ${{ random(8) }}
+      value: xinference-${{ random(8) }}
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: xinference-${{ defaults.app_name }}
+  name: ${{ defaults.app_name }}
+  annotations:
+    originImageName: crpi-ll1boqtec4gsvmzo.cn-guangzhou.personal.cr.aliyuncs.com/nowinkey/xinference:20241029
+    deploy.cloud.sealos.io/minReplicas: '1'
+    deploy.cloud.sealos.io/maxReplicas: '1'
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    app: ${{ defaults.app_name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: xinference-${{ defaults.app_name }}
+      app: ${{ defaults.app_name }}
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: xinference-${{ defaults.app_name }}
+        app: ${{ defaults.app_name }}
     spec:
       containers:
         - image: crpi-ll1boqtec4gsvmzo.cn-guangzhou.personal.cr.aliyuncs.com/nowinkey/xinference:20241029
           imagePullPolicy: IfNotPresent
-          name: worker
+          name: ${{ defaults.app_name }}
           ports:
             - containerPort: 30001
               protocol: TCP
             - containerPort: 9997
               protocol: TCP
           resources:
-            requests:
-              cpu: 400m
-              ephemeral-storage: 100Mi
-              memory: 819Mi
-              nvidia.com/gpu: "4"
             limits:
               cpu: "4"
-              ephemeral-storage: 100Mi
-              memory: 16Gi
+              ephemeral-storage: 10000Mi
+              memory: 32Gi
+              nvidia.com/gpu: "4"
+            requests:
+              cpu: 400m
+              ephemeral-storage: 10000Mi
+              memory: 819Mi
               nvidia.com/gpu: "4"
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
             - mountPath: /dev/shm
               name: dshm
+      nodeSelector:
+        nvidia.com/gpu.product: NVIDIA-GeForce-RTX-4090-D
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -78,8 +87,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: xinference-${{ defaults.app_name }}
-  name: xinference-${{ defaults.app_name }}
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    app: ${{ defaults.app_name }}
+  name: ${{ defaults.app_name }}
 spec:
   internalTrafficPolicy: Cluster
   ipFamilies:
@@ -95,7 +105,7 @@ spec:
       protocol: TCP
       targetPort: 9997
   selector:
-    app: xinference-${{ defaults.app_name }}
+    app: ${{ defaults.app_name }}
   sessionAffinity: None
   type: ClusterIP
 
@@ -107,7 +117,10 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/backend-protocol: HTTP
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-  name: xinference-${{ defaults.app_name }}
+  name: ${{ defaults.app_name }}
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    cloud.sealos.io/app-deploy-manager-domain: ${{ defaults.app_host }}
 spec:
   rules:
     - host: ${{ defaults.app_host }}.10.11.5.103.nip.io
@@ -115,7 +128,7 @@ spec:
         paths:
           - backend:
               service:
-                name: xinference-${{ defaults.app_name }}
+                name: ${{ defaults.app_name }}
                 port:
                   number: 9997
             path: /
@@ -124,3 +137,18 @@ spec:
     - hosts:
         - ${{ defaults.app_host }}.10.11.5.103.nip.io
       secretName: wildcard-cert
+
+---
+apiVersion: app.sealos.io/v1
+kind: App
+metadata:
+  name: ${{ defaults.app_name }}
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+spec:
+  data:
+    url: https://${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
+  displayType: normal
+  icon: ""
+  name: Xinference
+  type: link
