@@ -12,7 +12,7 @@ spec:
   icon: 'https://raw.githubusercontent.com/xorbitsai/inference/main/assets/xorbits-logo.png'
   templateType: inline
   categories:
-    - tool
+    - ai
   defaults:
     app_host:
       type: string
