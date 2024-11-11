@@ -1,9 +1,9 @@
 apiVersion: app.sealos.io/v1
 kind: Template
 metadata:
-  name: xinference
+  name: xinference-qwen2.5-instruct
 spec:
-  title: 'Xinference'
+  title: 'Xinference qwen2.5-instruct'
   url: 'https://inference.readthedocs.io/en/latest/index.html'
   gitRepo: 'https://github.com/xorbitsai/inference'
   author: 'Sealos'
@@ -19,7 +19,7 @@ spec:
       value: ${{ random(8) }}
     app_name:
       type: string
-      value: xinference-${{ random(8) }}
+      value: xinference-qwen2.5-${{ random(8) }}
   inputs:
 
 ---
@@ -58,12 +58,12 @@ spec:
           resources:
             limits:
               cpu: "4"
-              ephemeral-storage: 10000Mi
+              ephemeral-storage: 10Gi
               memory: 32Gi
               nvidia.com/gpu: "4"
             requests:
               cpu: 400m
-              ephemeral-storage: 10000Mi
+              ephemeral-storage: 10Gi
               memory: 819Mi
               nvidia.com/gpu: "4"
           terminationMessagePath: /dev/termination-log
@@ -150,6 +150,6 @@ spec:
   data:
     url: https://${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
   displayType: normal
-  icon: ""
-  name: Xinference
+  icon: "https://raw.githubusercontent.com/xorbitsai/inference/main/assets/xorbits-logo.png"
+  name: Xinference-qwen2.5
   type: link
