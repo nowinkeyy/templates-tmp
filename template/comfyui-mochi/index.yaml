@@ -1,0 +1,141 @@
+apiVersion: app.sealos.io/v1
+kind: Template
+metadata:
+  name: comfyui-mochi
+spec:
+  title: 'comfyui-mochi'
+  url: 'https://www.comfy.org/'
+  gitRepo: 'https://github.com/comfyanonymous/ComfyUI'
+  author: 'Sealos'
+  description: 'The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface.'
+  readme: 'https://raw.githubusercontent.com/comfyanonymous/ComfyUI/refs/heads/master/README.md'
+  icon: 'https://private-user-images.githubusercontent.com/11897485/270180396-3f10029b-2119-4391-8458-3379e02418a1.svg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzEzMDg0MTQsIm5iZiI6MTczMTMwODExNCwicGF0aCI6Ii8xMTg5NzQ4NS8yNzAxODAzOTYtM2YxMDAyOWItMjExOS00MzkxLTg0NTgtMzM3OWUwMjQxOGExLnN2Zz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDExMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMTExVDA2NTUxNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTQ2YjY5MWVmMDhjODE4YzlmODczZDU0YWQ2NjFmNzRkNDUwZDY1NmZiMTFjNTU5OTExOWYyYmRhZGE2Njk5MTMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.XQ9BLJdKJ-Bbf03HSn9WxEMDzbU-Ii1X-wi8QmTbV5k'
+  templateType: inline
+  categories:
+    - ai
+  defaults:
+    app_host:
+      type: string
+      value: ${{ random(8) }}
+    app_name:
+      type: string
+      value: comfyui-mochi-${{ random(8) }}
+  inputs:
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${{ defaults.app_name }}
+  annotations:
+    originImageName: sealos.hub:5000/aoride/mochi-comfyui:dev
+    deploy.cloud.sealos.io/minReplicas: '1'
+    deploy.cloud.sealos.io/maxReplicas: '1'
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    app: ${{ defaults.app_name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${{ defaults.app_name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ${{ defaults.app_name }}
+    spec:
+      containers:
+        - image: sealos.hub:5000/aoride/mochi-comfyui:dev
+          imagePullPolicy: IfNotPresent
+          name: ${{ defaults.app_name }}
+          ports:
+            - containerPort: 8188
+          resources:
+            limits:
+              cpu: "4"
+              ephemeral-storage: 10Gi
+              memory: 32Gi
+              nvidia.com/gpu: "1"
+            requests:
+              cpu: 400m
+              ephemeral-storage: 10Gi
+              memory: 819Mi
+              nvidia.com/gpu: "1"
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      nodeSelector:
+        nvidia.com/gpu.product: NVIDIA-GeForce-RTX-4090-D
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    app: ${{ defaults.app_name }}
+  name: ${{ defaults.app_name }}
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: http
+      port: 8188
+      protocol: TCP
+      targetPort: 8188
+  selector:
+    app: ${{ defaults.app_name }}
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  name: ${{ defaults.app_name }}
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+    cloud.sealos.io/app-deploy-manager-domain: ${{ defaults.app_host }}
+spec:
+  rules:
+    - host: ${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
+      http:
+        paths:
+          - backend:
+              service:
+                name: ${{ defaults.app_name }}
+                port:
+                  number: 8188
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - ${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
+      secretName: wildcard-cert
+
+---
+apiVersion: app.sealos.io/v1
+kind: App
+metadata:
+  name: ${{ defaults.app_name }}
+  labels:
+    cloud.sealos.io/app-deploy-manager: ${{ defaults.app_name }}
+spec:
+  data:
+    url: https://${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
+  displayType: normal
+  icon: "https://private-user-images.githubusercontent.com/11897485/270180396-3f10029b-2119-4391-8458-3379e02418a1.svg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzEzMDg0MTQsIm5iZiI6MTczMTMwODExNCwicGF0aCI6Ii8xMTg5NzQ4NS8yNzAxODAzOTYtM2YxMDAyOWItMjExOS00MzkxLTg0NTgtMzM3OWUwMjQxOGExLnN2Zz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDExMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMTExVDA2NTUxNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTQ2YjY5MWVmMDhjODE4YzlmODczZDU0YWQ2NjFmNzRkNDUwZDY1NmZiMTFjNTU5OTExOWYyYmRhZGE2Njk5MTMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.XQ9BLJdKJ-Bbf03HSn9WxEMDzbU-Ii1X-wi8QmTbV5k"
+  name: Comfyui-mochi
+  type: link
