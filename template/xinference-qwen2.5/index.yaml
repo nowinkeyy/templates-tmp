@@ -1,7 +1,7 @@
 apiVersion: app.sealos.io/v1
 kind: Template
 metadata:
-  name: xinference-qwen2.5-instruct
+  name: xinference-qwen2.5-72B
 spec:
   title: 'Xinference qwen2.5-instruct'
   url: 'https://inference.readthedocs.io/en/latest/index.html'
