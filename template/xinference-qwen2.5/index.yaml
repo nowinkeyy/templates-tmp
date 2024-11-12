@@ -1,7 +1,7 @@
 apiVersion: app.sealos.io/v1
 kind: Template
 metadata:
-  name: xinference-qwen2.5-72B
+  name: xinference-qwen25-72B
 spec:
   title: 'Xinference qwen2.5-instruct'
   url: 'https://inference.readthedocs.io/en/latest/index.html'
@@ -19,7 +19,7 @@ spec:
       value: ${{ random(8) }}
     app_name:
       type: string
-      value: xinference-qwen2.5-${{ random(8) }}
+      value: xinference-qwen25-${{ random(8) }}
   inputs:
 
 ---
@@ -151,5 +151,5 @@ spec:
     url: https://${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
   displayType: normal
   icon: "https://raw.githubusercontent.com/xorbitsai/inference/main/assets/xorbits-logo.png"
-  name: Xinference-qwen2.5-72B
+  name: Xinference-qwen25-72B
   type: link
