@@ -47,7 +47,7 @@ spec:
         app: ${{ defaults.app_name }}
     spec:
       containers:
-        - image: docker.io/nowinkey/comfyui-sd3.5:v1
+        - image: sealos.hub:5000/nowinkey/comfyui-sd3.5:v1
           imagePullPolicy: IfNotPresent
           name: ${{ defaults.app_name }}
           ports:
