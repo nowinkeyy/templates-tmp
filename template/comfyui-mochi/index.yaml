@@ -10,6 +10,7 @@ spec:
   description: 'The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface.'
   readme: 'https://raw.githubusercontent.com/comfyanonymous/ComfyUI/refs/heads/master/README.md'
   icon: 'https://raw.githubusercontent.com/MochiDiffusion/MochiDiffusion/main/Mochi%20Diffusion/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png'
+  templateType: inline
   categories:
     - ai
   defaults:
