@@ -9,7 +9,7 @@ spec:
   author: 'Sealos'
   description: 'The most powerful and modular diffusion model GUI, api and backend with a graph/nodes interface.'
   readme: 'https://raw.githubusercontent.com/comfyanonymous/ComfyUI/refs/heads/master/README.md'
-  icon: 'https://camo.githubusercontent.com/9b22e1232168606b1f0a237a93d447f3f06187caa8b6f036556f71050846bc86/68747470733a2f2f7169616e77656e2d7265732e6f73732d636e2d6265696a696e672e616c6979756e63732e636f6d2f6c6f676f5f7177656e2e6a7067'
+  icon: 'https://avatars.githubusercontent.com/u/121283862?v=4'
   templateType: inline
   categories:
     - ai
