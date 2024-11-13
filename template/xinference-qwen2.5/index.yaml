@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: xinference-qwen25-72B
 spec:
-  title: 'Xinference qwen2.5-instruct'
+  title: 'Xinference-Qwen2.5-72B'
   url: 'https://inference.readthedocs.io/en/latest/index.html'
   gitRepo: 'https://github.com/xorbitsai/inference'
   author: 'Sealos'
@@ -151,5 +151,5 @@ spec:
     url: https://${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
   displayType: normal
   icon: "https://raw.githubusercontent.com/xorbitsai/inference/main/assets/xorbits-logo.png"
-  name: Xinference-qwen25-72B
+  name: Xinference-Qwen2.5-72B
   type: link

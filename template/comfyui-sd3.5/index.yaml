@@ -1,9 +1,9 @@
 apiVersion: app.sealos.io/v1
 kind: Template
 metadata:
-  name: comfyui-sd35
+  name: comfyui-stable-diffusion-3.5-large
 spec:
-  title: 'comfyui-sd35'
+  title: 'Comfyui-Stable-Diffusion-3.5-Large'
   url: 'https://www.comfy.org/'
   gitRepo: 'https://github.com/comfyanonymous/ComfyUI'
   author: 'Sealos'
@@ -136,6 +136,6 @@ spec:
   data:
     url: https://${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
   displayType: normal
-  icon: "https://private-user-images.githubusercontent.com/11897485/270180396-3f10029b-2119-4391-8458-3379e02418a1.svg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzEzMDg0MTQsIm5iZiI6MTczMTMwODExNCwicGF0aCI6Ii8xMTg5NzQ4NS8yNzAxODAzOTYtM2YxMDAyOWItMjExOS00MzkxLTg0NTgtMzM3OWUwMjQxOGExLnN2Zz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDExMTElMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMTExVDA2NTUxNFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTQ2YjY5MWVmMDhjODE4YzlmODczZDU0YWQ2NjFmNzRkNDUwZDY1NmZiMTFjNTU5OTExOWYyYmRhZGE2Njk5MTMmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.XQ9BLJdKJ-Bbf03HSn9WxEMDzbU-Ii1X-wi8QmTbV5k"
-  name: Comfyui-sd35
+  icon: 'https://avatars.githubusercontent.com/u/121283862?v=4'
+  name: Comfyui-Stable-Diffusion-3.5-Large
   type: link
