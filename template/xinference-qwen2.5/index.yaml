@@ -28,7 +28,7 @@ kind: Deployment
 metadata:
   name: ${{ defaults.app_name }}
   annotations:
-    originImageName: crpi-ll1boqtec4gsvmzo.cn-guangzhou.personal.cr.aliyuncs.com/nowinkey/xinference:20241029
+    originImageName: sealos.hub:5000/aoruide/xinference-qwen25:v1
     deploy.cloud.sealos.io/minReplicas: '1'
     deploy.cloud.sealos.io/maxReplicas: '1'
   labels:
@@ -47,7 +47,7 @@ spec:
         app: ${{ defaults.app_name }}
     spec:
       containers:
-        - image: crpi-ll1boqtec4gsvmzo.cn-guangzhou.personal.cr.aliyuncs.com/nowinkey/xinference:20241029
+        - image: sealos.hub:5000/aoruide/xinference-qwen25:v1
           imagePullPolicy: IfNotPresent
           name: ${{ defaults.app_name }}
           ports:
