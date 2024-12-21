@@ -28,7 +28,7 @@ kind: Deployment
 metadata:
   name: ${{ defaults.app_name }}
   annotations:
-    originImageName: sealos.hub:5000/aoride/mochi-comfyui:dev
+    originImageName: sealos.hub:5000/luanshaotong/mochi:dev
     deploy.cloud.sealos.io/minReplicas: '1'
     deploy.cloud.sealos.io/maxReplicas: '1'
   labels:
@@ -47,7 +47,7 @@ spec:
         app: ${{ defaults.app_name }}
     spec:
       containers:
-        - image: sealos.hub:5000/aoride/mochi-comfyui:dev
+        - image: sealos.hub:5000/luanshaotong/mochi:dev
           imagePullPolicy: IfNotPresent
           name: ${{ defaults.app_name }}
           ports:
