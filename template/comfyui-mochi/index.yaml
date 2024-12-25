@@ -1,9 +1,9 @@
 apiVersion: app.sealos.io/v1
 kind: Template
 metadata:
-  name: comfyui-mochi-1-preview
+  name: comfyui-mochi-1-preview-test
 spec:
-  title: 'Comfyui-Mochi-1-Preview'
+  title: 'Comfyui-Mochi-1-Preview-test'
   url: 'https://www.comfy.org/'
   gitRepo: 'https://github.com/comfyanonymous/ComfyUI'
   author: 'Sealos'
