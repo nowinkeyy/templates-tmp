@@ -11,6 +11,11 @@ spec:
   readme: 'https://raw.githubusercontent.com/labring/FastGPT/main/README.md'
   icon: 'https://raw.githubusercontent.com/labring/FastGPT/main/.github/imgs/logo.svg'
   templateType: inline
+  locale: zh
+  i18n:
+    en:
+      description: 'A free, open-source, and powerful AI knowledge base platform, offers out-of-the-box data processing, model invocation, RAG retrieval, and visual AI workflows. Easily build complex LLM applications.'
+      readme: 'https://raw.githubusercontent.com/labring/FastGPT/main/README_en.md'
   categories:
     - ai
   defaults:
@@ -28,7 +33,7 @@ spec:
       value: ${{ random(8) }}
   inputs:
     root_password:
-      description: 'root 用户密码，用户名为: root'
+      description: 'root user''s password，username is: root'
       type: string
       default: ''
       required: true
@@ -72,7 +77,7 @@ kind: Deployment
 metadata:
   name: ${{ defaults.app_name }}
   annotations:
-    originImageName: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt:v4.8.9
+    originImageName: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt:v4.8.22
     deploy.cloud.sealos.io/minReplicas: '1'
     deploy.cloud.sealos.io/maxReplicas: '1'
   labels:
@@ -92,7 +97,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: ${{ defaults.app_name }}
-          image: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt:v4.8.9
+          image: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt:v4.8.22
           env:
             - name: MONGO_PASSWORD
               valueFrom:
@@ -104,6 +109,8 @@ spec:
                 secretKeyRef:
                   name: ${{ defaults.app_name }}-pg-conn-credential
                   key: password
+            - name: FE_DOMAIN
+              value: https://${{ defaults.app_host }}.${{ SEALOS_CLOUD_DOMAIN }}
             - name: DEFAULT_ROOT_PSW
               value: ${{ inputs.root_password }}
             - name: OPENAI_BASE_URL
@@ -126,13 +133,21 @@ spec:
                 postgresql://postgres:$(PG_PASSWORD)@${{ defaults.app_name }}-pg-postgresql.${{ SEALOS_NAMESPACE }}.svc:5432/postgres
             - name: SANDBOX_URL
               value: http://${{ defaults.app_name }}-sandbox.${{ SEALOS_NAMESPACE }}.svc.cluster.local:3000
+            - name: LOG_LEVEL
+              value: info
+            - name: STORE_LOG_LEVEL
+              value: warn
+            - name: WORKFLOW_MAX_RUN_TIMES
+              value: '500'
+            - name: WORKFLOW_MAX_LOOP_TIMES
+              value: '50'
           resources:
             requests:
               cpu: 50m
-              memory: 128Mi
+              memory: 256Mi
             limits:
               cpu: 500m
-              memory: 1Gi
+              memory: 2Gi
           command: []
           args: []
           ports:
@@ -158,166 +173,14 @@ metadata:
 data:
   vn-appvn-datavn-configvn-json: |
     {
-      "systemEnv": {
-        "openapiPrefix": "fastgpt",
-        "vectorMaxProcess": 15,
-        "qaMaxProcess": 15,
-        "pgHNSWEfSearch": 100,
-        "tokenWorkers": 20
+      "feConfigs": {
+        "lafEnv": "https://laf.dev" 
       },
-      "llmModels": [
-        {
-          "model": "gpt-3.5-turbo",
-          "name": "gpt-3.5-turbo",
-          "maxContext": 16000,
-          "avatar": "/imgs/model/openai.svg",
-          "maxResponse": 4000,
-          "quoteMaxToken": 13000,
-          "maxTemperature": 1.2,
-          "charsPointsPrice": 0,
-          "censor": false,
-          "vision": false,
-          "datasetProcess": true,
-          "usedInClassify": true,
-          "usedInExtractFields": true,
-          "usedInToolCall": true,
-          "usedInQueryExtension": true,
-          "toolChoice": true,
-          "functionCall": true,
-          "customCQPrompt": "",
-          "customExtractPrompt": "",
-          "defaultSystemChatPrompt": "",
-          "defaultConfig": {}
-        },
-        {
-          "model": "gpt-4-0125-preview",
-          "name": "gpt-4-turbo",
-          "avatar": "/imgs/model/openai.svg",
-          "maxContext": 125000,
-          "maxResponse": 4000,
-          "quoteMaxToken": 100000,
-          "maxTemperature": 1.2,
-          "charsPointsPrice": 0,
-          "censor": false,
-          "vision": false,
-          "datasetProcess": false,
-          "usedInClassify": true,
-          "usedInExtractFields": true,
-          "usedInToolCall": true,
-          "usedInQueryExtension": true,
-          "toolChoice": true,
-          "functionCall": false,
-          "customCQPrompt": "",
-          "customExtractPrompt": "",
-          "defaultSystemChatPrompt": "",
-          "defaultConfig": {}
-        },
-        {
-          "model": "gpt-4-vision-preview",
-          "name": "gpt-4-vision",
-          "avatar": "/imgs/model/openai.svg",
-          "maxContext": 128000,
-          "maxResponse": 4000,
-          "quoteMaxToken": 100000,
-          "maxTemperature": 1.2,
-          "charsPointsPrice": 0,
-          "censor": false,
-          "vision": true,
-          "datasetProcess": false,
-          "usedInClassify": false,
-          "usedInExtractFields": false,
-          "usedInToolCall": false,
-          "usedInQueryExtension": false,
-          "toolChoice": true,
-          "functionCall": false,
-          "customCQPrompt": "",
-          "customExtractPrompt": "",
-          "defaultSystemChatPrompt": "",
-          "defaultConfig": {}
-        }
-      ],
-      "vectorModels": [
-        {
-          "model": "text-embedding-3-large",
-          "name": "text-embedding-3-large",
-          "avatar": "/imgs/model/openai.svg",
-          "charsPointsPrice": 0,
-          "defaultToken": 512,
-          "maxToken": 3000,
-          "weight": 100,
-          "dbConfig": {},
-          "queryConfig": {},
-          "defaultConfig": {
-            "dimensions": 1024
-          }
-        },
-        {
-          "model": "text-embedding-3-small",
-          "name": "text-embedding-3-small",
-          "avatar": "/imgs/model/openai.svg",
-          "charsPointsPrice": 0,
-          "defaultToken": 512,
-          "maxToken": 3000,
-          "weight": 100,
-          "dbConfig": {},
-          "queryConfig": {}
-        },
-        {
-          "model": "text-embedding-ada-002",
-          "name": "text-embedding-ada-002",
-          "avatar": "/imgs/model/openai.svg",
-          "charsPointsPrice": 0,
-          "defaultToken": 512,
-          "maxToken": 3000,
-          "weight": 100,
-          "dbConfig": {},
-          "queryConfig": {}
-        }
-      ],
-      "reRankModels": [],
-      "audioSpeechModels": [
-        {
-          "model": "tts-1",
-          "name": "OpenAI TTS1",
-          "charsPointsPrice": 0,
-          "voices": [
-            {
-              "label": "Alloy",
-              "value": "alloy",
-              "bufferId": "openai-Alloy"
-            },
-            {
-              "label": "Echo",
-              "value": "echo",
-              "bufferId": "openai-Echo"
-            },
-            {
-              "label": "Fable",
-              "value": "fable",
-              "bufferId": "openai-Fable"
-            },
-            {
-              "label": "Onyx",
-              "value": "onyx",
-              "bufferId": "openai-Onyx"
-            },
-            {
-              "label": "Nova",
-              "value": "nova",
-              "bufferId": "openai-Nova"
-            },
-            {
-              "label": "Shimmer",
-              "value": "shimmer",
-              "bufferId": "openai-Shimmer"
-            }
-          ]
-        }
-      ],
-      "whisperModel": {
-        "model": "whisper-1",
-        "name": "Whisper1",
-        "charsPointsPrice": 0
+      "systemEnv": {
+        "vectorMaxProcess": 15, 
+        "qaMaxProcess": 15, 
+        "tokenWorkers": 30,
+        "pgHNSWEfSearch": 100 
       }
     }
 
@@ -390,7 +253,7 @@ kind: Deployment
 metadata:
   name: ${{ defaults.app_name }}-sandbox
   annotations:
-    originImageName: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt-sandbox:v4.8.9
+    originImageName: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt-sandbox:v4.8.22
     deploy.cloud.sealos.io/minReplicas: '1'
     deploy.cloud.sealos.io/maxReplicas: '1'
     deploy.cloud.sealos.io/resize: 0Gi
@@ -416,7 +279,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: ${{ defaults.app_name }}-sandbox
-          image: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt-sandbox:v4.8.9
+          image: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt-sandbox:v4.8.22
           env: []
           resources:
             requests:
@@ -479,7 +342,7 @@ spec:
             resources:
               requests:
                 storage: 5Gi
-            storageClassName: openebs-backup
+
   terminationPolicy: Delete
   tolerations: []
 
@@ -567,7 +430,7 @@ spec:
             resources:
               requests:
                 storage: 5Gi
-            storageClassName: openebs-backup
+
   terminationPolicy: Delete
   tolerations: []
 

@@ -198,8 +198,8 @@ spec:
               - ReadWriteOnce
             resources:
               requests:
-                storage: 1Gi
-            storageClassName: openebs-backup
+                storage: 3Gi
+
   terminationPolicy: Delete
   tolerations: []
 

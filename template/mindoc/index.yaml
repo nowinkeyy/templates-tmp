@@ -11,6 +11,7 @@ spec:
   readme: 'https://raw.githubusercontent.com/mindoc-org/mindoc/master/README.md'
   icon: 'https://mindoc.com.cn/favicon.ico'
   templateType: inline
+  locale: zh
   categories:
     - tool
   defaults:
@@ -75,7 +76,7 @@ spec:
             resources:
               requests:
                 storage: 5Gi
-            storageClassName: openebs-backup
+
   terminationPolicy: Delete
   tolerations: []
 
@@ -196,7 +197,7 @@ spec:
             resources:
               requests:
                 storage: 3Gi
-            storageClassName: openebs-backup
+
     - componentDefRef: redis-sentinel
       monitor: true
       name: redis-sentinel

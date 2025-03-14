@@ -4,13 +4,18 @@ metadata:
   name: teable
 spec:
   title: 'teable'
-  url: 'teable.cn'
+  url: 'teable.io'
   gitRepo: 'https://github.com/teableio/teable'
   author: 'Sealos'
-  description: '企业级高性能多维表格 - 无限行数+自动工化作流+精细权限'
+  description: 'Teable is a Super fast, Real-time, Professional, Developer friendly, No-code database built on Postgres.'
   readme: 'https://raw.githubusercontent.com/teableio/teable/develop/README.md'
   icon: 'https://framerusercontent.com/images/x9gZmjwbtvaGd95qbfUmsZ8Jc.png'
   templateType: inline
+  locale: en
+  i18n:
+    zh:
+      url: 'teable.cn'
+      description: 'Teable 是一款企业级高性能多维表格解决方案，通过无代码方式快速构建业务管理系统，支持私有部署和精细权限管理。'
   categories:
     - database
     - low-code
@@ -35,7 +40,7 @@ kind: Deployment
 metadata:
   name: ${{ defaults.app_name }}
   annotations:
-    originImageName: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:0.1.0-alpha-1.3.1-build.19
+    originImageName: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
     deploy.cloud.sealos.io/minReplicas: '1'
     deploy.cloud.sealos.io/maxReplicas: '1'
   labels:
@@ -57,7 +62,7 @@ spec:
       automountServiceAccountToken: false
       initContainers:
         - name: db-migrate
-          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:0.1.0-alpha-1.3.1-build.19
+          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-db-migrate-ee:latest
           env:
             - name: PG_PASSWORD
               valueFrom:
@@ -82,7 +87,7 @@ spec:
               memory: 1024Mi
       containers:
         - name: ${{ defaults.app_name }}
-          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:0.1.0-alpha-1.3.1-build.19
+          image: registry.cn-shenzhen.aliyuncs.com/teable/teable-ee:latest
           env:
             - name: PG_PASSWORD
               valueFrom:
@@ -121,6 +126,11 @@ spec:
                 secretKeyRef:
                   name: object-storage-key
                   key: external
+            - name: BACKEND_STORAGE_MINIO_INTERNAL_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: object-storage-key
+                  key: internal
             - name: BACKEND_STORAGE_MINIO_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
@@ -133,6 +143,8 @@ spec:
                   key: secretKey
             - name: BACKEND_STORAGE_MINIO_PORT
               value: "443"
+            - name: BACKEND_STORAGE_MINIO_INTERNAL_PORT
+              value: "80"
             - name: BACKEND_STORAGE_MINIO_USE_SSL
               value: 'true'
             - name: STORAGE_PREFIX
@@ -172,7 +184,7 @@ spec:
               memory: 4096Mi
           ports:
             - containerPort: 3000
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           livenessProbe:
             httpGet:
               path: /health
@@ -283,7 +295,7 @@ spec:
             resources:
               requests:
                 storage: 5Gi
-            storageClassName: openebs-backup
+
   terminationPolicy: Delete
   tolerations: []
 ---
@@ -404,7 +416,7 @@ spec:
             resources:
               requests:
                 storage: 3Gi
-            storageClassName: openebs-backup
+
     - componentDefRef: redis-sentinel
       monitor: true
       name: redis-sentinel
